@@ -73,6 +73,24 @@ contract HumanToken is ERC20 {
     );
   }
 
+  function updateBallot(uint8 value) external {
+    require(lastCollected[msg.sender] != 0);
+    // 0 value is reserved for some reason?
+    require(value > 0 && value < 33);
+    // No change, get out!
+    if(accountBallots[msg.sender] == value) return;
+
+    // Remove old ballot from the bucket
+    ballotBuckets[accountBallots[msg.sender]]--;
+
+    // Add new ballot to bucket
+    ballotBuckets[value]++;
+    accountBallots[msg.sender] = value;
+
+    updateMedian();
+
+  }
+
   function updateMedian() internal {
     uint128 curEpoch = uint128((block.timestamp - initTime) / epochDuration);
 
@@ -103,13 +121,6 @@ contract HumanToken is ERC20 {
       // The median has not changed in this epoch yet
       epochs.push(EpochMedian(curEpoch, curBucket - 1));
     }
-
-  }
-
-  function submitBallot(uint8 value) external {
-    require(lastCollected[msg.sender] != 0);
-    // 0 value is reserved for not
-    require(value > 0 && value < 33);
 
   }
 

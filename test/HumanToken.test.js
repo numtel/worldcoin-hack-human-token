@@ -51,7 +51,7 @@ exports.canJoin = async function({
   assert.strictEqual(Number(curEpoch.median), 4);
 
   // Third user joins
-  await token.sendFrom(accounts[1]).join(
+  await token.sendFrom(accounts[2]).join(
     1, // root
     4, // nullifierHash
     [0,0,0,0,0,0,0,0], // proof
@@ -64,7 +64,7 @@ exports.canJoin = async function({
   await increaseTime(EPOCH_DURATION + 1);
 
   // Fourth user joins
-  await token.sendFrom(accounts[1]).join(
+  await token.sendFrom(accounts[3]).join(
     1, // root
     5, // nullifierHash
     [0,0,0,0,0,0,0,0], // proof
@@ -77,5 +77,10 @@ exports.canJoin = async function({
   // New epoch is recorded
   curEpoch = await token.methods.epochs(1).call();
   assert.strictEqual(Number(curEpoch.median), 7);
+
+  // Second user changes their ballot
+  await token.sendFrom(accounts[1]).updateBallot(11);
+  curEpoch = await token.methods.epochs(1).call();
+  assert.strictEqual(Number(curEpoch.median), 9);
 }
 
