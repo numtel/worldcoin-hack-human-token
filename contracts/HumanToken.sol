@@ -14,17 +14,18 @@ contract HumanToken is ERC20 {
   uint public ballotCount;
   uint8 public ballotMedian;
 
-  IWorldId public worldId;
+  IWorldID public worldId;
   uint public groupId;
   uint public actionId;
   uint public epochDuration;
+  uint public initTime;
 
   mapping(uint256 => bool) internal nullifierHashes;
 
   mapping(address => uint) public lastCollected;
 
   constructor(
-    IWorldId _worldId,
+    IWorldID _worldId,
     uint256 _groupId,
     string memory _actionId,
     uint _epochDuration
@@ -33,6 +34,7 @@ contract HumanToken is ERC20 {
     groupId = _groupId;
     actionId = abi.encodePacked(_actionId).hashToField();
     epochDuration = _epochDuration;
+    initTime = block.timestamp;
   }
 
   function join(
